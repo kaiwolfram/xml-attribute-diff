@@ -1,10 +1,35 @@
+use clap::{App, Arg, ArgMatches};
 use quick_xml::events::Event;
 use quick_xml::Reader;
 use std::collections::HashSet;
 
 fn main() -> Result<(), String> {
-    let file1 = "file1.xml";
-    let file2 = "file2.xml";
+    let matches = App::new("xml-attribute-diff")
+        .version("0.1.0")
+        .about("Compare attribute values of two xml files")
+        .arg(
+            Arg::with_name("file1")
+                .help("Original xml file, used as a reference for the comparison")
+                .index(1)
+                .validator(is_xml_path)
+                .required(true),
+        )
+        .arg(
+            Arg::with_name("file2")
+                .help("xml file to compare to the original file")
+                .index(2)
+                .validator(is_xml_path)
+                .required(true),
+        )
+        .get_matches();
+    process_cli(&matches)
+}
+
+/// Processes command line arguments and executes program
+fn process_cli(matches: &ArgMatches) -> Result<(), String> {
+    let file1 = matches.value_of("file1").ok_or("File1 is missing")?;
+    let file2 = matches.value_of("file2").ok_or("File2 is missing")?;
+
     let origin = get_attributes_from_xml(file1)?;
     let file = get_attributes_from_xml(file2)?;
     let difference = file.len() as i32 - origin.len() as i32;
@@ -16,7 +41,15 @@ fn main() -> Result<(), String> {
     Ok(())
 }
 
-/// Prints the difference between the total attribute number of file1 and file2
+/// Checks if string ends with ".xml"
+fn is_xml_path(path: String) -> Result<(), String> {
+    if path.ends_with(".xml") {
+        return Ok(());
+    }
+    Err(format!("[{}] is not an xml file", path))
+}
+
+/// Prints the difference between the total number of attributes of two files
 fn print_diff(difference: i32, name1: &str, name2: &str) {
     match difference {
         0 => println!("{} has the same amount of attributes as {}", name1, name2),
