@@ -23,12 +23,12 @@ Example
 ------------
 ```
 $xml-attribute-diff abc.xml xyz.xml
-file2 has one attribute more than file1
-file2 has 3 new attributes:
+file2 has one attribute value more than file1
+file2 has 3 new attribute values:
         blue
         red
         purple
-file2 has 2 missing attributes:
+file2 has 2 missing attribute values:
         white
         black
 ```
