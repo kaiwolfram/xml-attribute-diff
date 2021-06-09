@@ -34,9 +34,9 @@ fn process_cli(matches: &ArgMatches) -> Result<(), String> {
     let file = get_attributes_from_xml(file2)?;
     let difference = file.len() as i32 - origin.len() as i32;
 
-    print_diff(difference, file1, file2);
-    print_new_attributes(&file.difference(&origin).collect(), file1);
-    print_missing_attributes(&origin.difference(&file).collect(), file1);
+    print_diff(difference);
+    print_new_attributes(&file.difference(&origin).collect());
+    print_missing_attributes(&origin.difference(&file).collect());
 
     Ok(())
 }
@@ -50,49 +50,37 @@ fn is_xml_path(path: String) -> Result<(), String> {
 }
 
 /// Prints the difference between the total number of attributes of two files
-fn print_diff(difference: i32, name1: &str, name2: &str) {
+fn print_diff(difference: i32) {
     match difference {
-        0 => println!("{} has the same amount of attributes as {}", name1, name2),
-        1 => println!("{} has one attribute more than {}", name1, name2),
-        -1 => println!("{} has one attribute less than {}", name1, name2),
+        0 => println!("file2 has the same amount of attributes as file1"),
+        1 => println!("file2 has one attribute more than file1"),
+        -1 => println!("file2 has one attribute less than file1"),
         _ => {
             if difference.is_positive() {
-                println!(
-                    "{} has {} attributes more than {}",
-                    name1, difference, name2
-                );
+                println!("file2 has {} attributes more than file1", difference);
             } else {
-                println!(
-                    "{} has {} attributes less than {}",
-                    name1,
-                    difference.abs(),
-                    name2
-                );
+                println!("file2 has {} attributes less than file1", difference.abs(),);
             }
         }
     };
 }
 
 /// Prints new attributes
-fn print_new_attributes(new_attributes: &Vec<&String>, file_name: &str) {
+fn print_new_attributes(new_attributes: &Vec<&String>) {
     match new_attributes.len() {
-        0 => println!("{} has no new attributes", file_name),
-        1 => println!("{} has one new attribute:", file_name),
-        _ => println!("{} has {} new attributes:", file_name, new_attributes.len()),
+        0 => println!("file2 has no new attributes"),
+        1 => println!("file2 has one new attribute:"),
+        _ => println!("file2 has {} new attributes:", new_attributes.len()),
     }
     print_changes(new_attributes);
 }
 
 /// Prints missing attributes
-fn print_missing_attributes(missing_attributes: &Vec<&String>, file_name: &str) {
+fn print_missing_attributes(missing_attributes: &Vec<&String>) {
     match missing_attributes.len() {
-        0 => println!("{} has no missing attributes", file_name),
-        1 => println!("{} has one missing attribute:", file_name),
-        _ => println!(
-            "{} has {} missing attributes:",
-            file_name,
-            missing_attributes.len()
-        ),
+        0 => println!("file2 has no missing attributes"),
+        1 => println!("file2 has one missing attribute:"),
+        _ => println!("file2 has {} missing attributes:", missing_attributes.len()),
     }
     print_changes(missing_attributes);
 }
