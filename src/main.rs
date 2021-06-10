@@ -34,9 +34,14 @@ fn process_cli(matches: &ArgMatches) -> Result<(), String> {
     let file = get_attributes_from_xml(file2)?;
     let difference = file.len() as i32 - origin.len() as i32;
 
+    let mut new_attributes = file.difference(&origin).collect::<Vec<&String>>();
+    let mut missing_attributes = origin.difference(&file).collect::<Vec<&String>>();
+    new_attributes.sort();
+    missing_attributes.sort();
+
     print_diff(difference);
-    print_new_attributes(&file.difference(&origin).collect());
-    print_missing_attributes(&origin.difference(&file).collect());
+    print_new_attributes(&new_attributes);
+    print_missing_attributes(&missing_attributes);
 
     Ok(())
 }
@@ -90,6 +95,7 @@ fn print_missing_attributes(missing_attributes: &Vec<&String>) {
     }
     print_changes(missing_attributes);
 }
+
 /// Prints attributes indented
 fn print_changes(attributes: &Vec<&String>) {
     attributes.iter().for_each(|attr| println!("\t{}", attr));
